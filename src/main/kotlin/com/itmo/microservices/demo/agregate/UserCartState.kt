@@ -6,25 +6,26 @@ import ru.quipy.domain.AggregateState
 import ru.quipy.domain.Event
 import java.util.*
 
-const val TAG_CREATED_CHECKOUT = "CREATE_CHECKOUT"
 const val TAG_ADD_PAPPER = "ADD_PAPPER"
+const val TAG_REMOVE_PAPPER = "REMOVE_PAPPER"
 
 
 class UserCartState: AggregateState<String, UserCart> {
-    private lateinit var trackId: String
+    private lateinit var cartId: String
     private var createdAt: Long = System.currentTimeMillis()
     private var updatedAt: Long = System.currentTimeMillis()
     private var pappers = mutableMapOf<UUID, PappersEntity>()
     private lateinit var userId: UUID
-    override fun getId() = trackId
+    override fun getId() = cartId
 
     @StateTransitionFunc
-    fun tagCreatedApply(event: TagCreatedCheckoutEvent) {
+    fun taskAddPaper(event: TagAddPaper) {
+        pappers[event.papperId] = PappersEntity(event.papperId, event.namePapper)
         updatedAt = createdAt
     }
 
     @StateTransitionFunc
-    fun taskCreatedApply(event: TagAddPaper) {
+    fun taskRemovePaper(event: TagRemovePapper) {
         pappers[event.papperId] = PappersEntity(event.papperId, event.namePapper)
         updatedAt = createdAt
     }
@@ -35,14 +36,6 @@ data class PappersEntity(
     val name: String,
 )
 
-@DomainEvent(name = TAG_CREATED_CHECKOUT)
-class TagCreatedCheckoutEvent(
-    createdAt: Long = System.currentTimeMillis(),
-) : Event<UserCart>(
-    name = TAG_CREATED_CHECKOUT,
-    createdAt = createdAt,
-)
-
 @DomainEvent(name = TAG_ADD_PAPPER)
 class TagAddPaper(
     val papperId: UUID,
@@ -51,14 +44,26 @@ class TagAddPaper(
     name = TAG_ADD_PAPPER,
 )
 
-fun UserCart.createUserCheckout(
-): TagCreatedCheckoutEvent {
-    return TagCreatedCheckoutEvent()
-}
+
+@DomainEvent(name = TAG_REMOVE_PAPPER)
+class TagRemovePapper(
+    val papperId: UUID,
+    val namePapper: String
+) : Event<UserCart>(
+    name = TAG_REMOVE_PAPPER,
+)
 
 fun UserCart.createAddPapper(
     papperId: UUID,
     namePapper: String
 ): TagAddPaper {
     return TagAddPaper(papperId, namePapper)
+}
+
+
+fun UserCart.createRemovePapper(
+    papperId: UUID,
+    namePapper: String
+): TagRemovePapper {
+    return TagRemovePapper(papperId, namePapper)
 }
