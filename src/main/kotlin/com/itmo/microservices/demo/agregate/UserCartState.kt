@@ -20,13 +20,13 @@ class UserCartState: AggregateState<String, UserCart> {
 
     @StateTransitionFunc
     fun taskAddPaper(event: TagAddPaper) {
-        pappers.remove(event.papperId)
+        pappers[event.papperId] = PappersEntity(event.papperId, event.namePapper)
         updatedAt = createdAt
     }
 
     @StateTransitionFunc
     fun taskRemovePaper(event: TagRemovePapper) {
-        pappers[event.papperId] = PappersEntity(event.papperId, event.namePapper)
+        pappers.remove(event.papperId)
         updatedAt = createdAt
     }
 }
