@@ -39,18 +39,22 @@ data class PappersEntity(
 @DomainEvent(name = TAG_ADD_PAPPER)
 class TagAddPaper(
     val papperId: UUID,
-    val namePapper: String
+    val namePapper: String,
+    createdAt: Long = System.currentTimeMillis(),
 ) : Event<UserCart>(
     name = TAG_ADD_PAPPER,
+    createdAt = createdAt,
 )
 
 
 @DomainEvent(name = TAG_REMOVE_PAPPER)
 class TagRemovePapper(
     val papperId: UUID,
-    val namePapper: String
+    val namePapper: String,
+    createdAt: Long = System.currentTimeMillis(),
 ) : Event<UserCart>(
     name = TAG_REMOVE_PAPPER,
+    createdAt = createdAt,
 )
 
 fun UserCart.createAddPapper(
